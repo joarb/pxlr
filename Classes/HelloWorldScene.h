@@ -11,6 +11,9 @@ private:
     float _maxDisplacementX;
     float _maxDisplacementY;
     
+    float _xOffset;
+    float _yOffset;
+    
     int _dragDirection;
     cocos2d::Vec2 _startTouchPos;
     cocos2d::Vec2 _startPos;

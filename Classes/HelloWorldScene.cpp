@@ -11,10 +11,19 @@ USING_NS_CC;
 #define SNAP_DIRECTION	20
 
 HelloWorld::HelloWorld() :
+	_maxDisplacementX(0.0f),
+	_maxDisplacementY(0.0f),
+	_xOffset(0.0f),
+	_yOffset(0.0f),
 	_dragDirection(DRAG_NONE),
-	_startBlock(nullptr)
+	_startTouchPos(cocos2d::Vec2(0.0f, 0.0f)),
+	_startPos(cocos2d::Vec2(0.0f, 0.0f)),
+	_startDiff(cocos2d::Vec2(0.0f, 0.0f)),
+	_startBlock(nullptr),
+	_numBlocks(0)
 {
-    
+    _xOffset = 30.0f;
+    _yOffset = 30.0f;
 }
 
 HelloWorld::~HelloWorld()
@@ -159,7 +168,7 @@ cocos2d::Vec2 HelloWorld::getBlockPosition(int col, int row)
     float xShift = getXShift();
     float yShift = getYShift();
 
-    return cocos2d::Vec2(col * xShift, row * yShift);
+    return cocos2d::Vec2(col * xShift + _xOffset, row * yShift + _yOffset);
 }
 
 void HelloWorld::getBlockIndices(cocos2d::Vec2 pos, int& col, int& row)
@@ -167,8 +176,8 @@ void HelloWorld::getBlockIndices(cocos2d::Vec2 pos, int& col, int& row)
     float xShift = getXShift();
     float yShift = getYShift();
 
-    col = round(pos.x/xShift);
-    row = round(pos.y/yShift);
+    col = round((pos.x - _xOffset)/xShift);
+    row = round((pos.y - _yOffset)/yShift);
 }
 
 float HelloWorld::getXShift()
@@ -360,20 +369,20 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
         cocos2d::Vec2 displacement;
         if ((touchPoint.x + _startDiff.x) > (_startPos.x + _maxDisplacementX))
         {
-            displacement.x = _maxDisplacementX;
+            displacement.x = _startPos.x + _maxDisplacementX;
         } else if ((touchPoint.x + _startDiff.x) < (_startPos.x - _maxDisplacementX))
         {
-            displacement.x = - _maxDisplacementX;
+            displacement.x = _startPos.x - _maxDisplacementX;
         } else {
             displacement.x = touchPoint.x + _startDiff.x;
         }
         
         if ((touchPoint.y + _startDiff.y) > (_startPos.y + _maxDisplacementY))
         {
-            displacement.y = _maxDisplacementY;
+            displacement.y = _startPos.y + _maxDisplacementY;
         } else if ((touchPoint.y + _startDiff.y) < (_startPos.y - _maxDisplacementY))
         {
-            displacement.y = - _maxDisplacementY;
+            displacement.y = _startPos.y - _maxDisplacementY;
         } else {
             displacement.y = touchPoint.y + _startDiff.y;
         }
