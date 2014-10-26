@@ -8,7 +8,9 @@ class HelloWorld : public cocos2d::Layer
 {
 private:
     
+    float _minDisplacementX;
     float _maxDisplacementX;
+    float _minDisplacementY;
     float _maxDisplacementY;
     
     float _xOffset;
@@ -43,7 +45,7 @@ private:
     void onTouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 
-    void SetMaxDisplacmenet(float& maxDisplacementX, float& maxDisplacementY);
+    void setMaxDisplacmenet(float& minDisplacementX, float& maxDisplacementX, float& minDisplacementY, float& maxDisplacementY);
     
 public:
     
