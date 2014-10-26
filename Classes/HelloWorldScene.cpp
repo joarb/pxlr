@@ -324,6 +324,31 @@ bool HelloWorld::onTouchBegan(Touch* touch, Event* event)
         //log("StartPos:  %4.2f, %4.2f", _startPos.x, _startPos.y);
         //log("TouchPos:  %4.2f, %4.2f", touch->getLocation().x, touch->getLocation().y);
         //log("Startdiff: %4.2f, %4.2f", _startDiff.x, _startDiff.y);
+        
+        int col;
+        int row;
+        
+        setMaxDisplacmenet(_minDisplacementX, _maxDisplacementX, _minDisplacementY, _maxDisplacementY);
+        getBlockPosition(_startBlock, col, row);
+        
+        if (col == 0)
+        {
+            _minDisplacementX = 0.0f;
+        }
+        else if (col == (int(sqrt(_numBlocks)) - 1))
+        {
+            _maxDisplacementX = 0.0f;
+        }
+        
+        if (row == 0)
+        {
+            _minDisplacementY = 0.0f;
+        }
+        else if (row == (int(sqrt(_numBlocks)) - 1))
+        {
+            _maxDisplacementY = 0.0f;
+        }
+        
         _startTouchPos = touch->getLocation();
     }
     return true;
@@ -365,30 +390,6 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
                 _dragDirection = DRAG_VERT;
             }
         //}
-
-        int col;
-        int row;
-        
-        setMaxDisplacmenet(_minDisplacementX, _maxDisplacementX, _minDisplacementY, _maxDisplacementY);
-        getBlockPosition(_startBlock, col, row);
-        
-        if (col == 0)
-        {
-            _minDisplacementX = 0.0f;
-        }
-        else if (col == (int(sqrt(_numBlocks)) - 1))
-        {
-            _maxDisplacementX = 0.0f;
-        }
-
-        if (row == 0)
-        {
-            _minDisplacementY = 0.0f;
-        }
-        else if (row == (int(sqrt(_numBlocks)) - 1))
-        {
-            _maxDisplacementY = 0.0f;
-        }
 
         //log("%4.2f, %4.2f", touchPoint.x + _startDiff.x, _maxDisplacementX);
         //log("%4.2f, %4.2f", touchPoint.y + _startDiff.y, _maxDisplacementY);
