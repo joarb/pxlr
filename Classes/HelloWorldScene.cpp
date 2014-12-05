@@ -252,7 +252,8 @@ bool HelloWorld::areBlocksAdjacent(PxlrBlock* block1, PxlrBlock* block2)
     getBlockPosition(block1, b1Col, b1Row);
     getBlockPosition(block2, b2Col, b2Row);
     
-    if (((b1Col == b2Col + 1) or (b1Col == b2Col - 1)) and ((b1Row == b2Row + 1) or (b1Row = b2Row - 1))) {
+    if ((((b1Col == b2Col + 1) or (b1Col == b2Col - 1)) and (b1Row == b2Row))
+        or (((b1Row == b2Row + 1) or (b1Row = b2Row - 1)) and (b1Col == b2Col))) {
         return true;
     } else {
         return false;
@@ -439,6 +440,9 @@ void HelloWorld::onTouchEnded(Touch* touch, Event* event)
         {
             if (areBlocksAdjacent(_startBlock, endBlock)) {
                 // TODO: Swap!
+                _startBlock->setPosition(endBlock->getPosition());
+                endBlock->setPosition(_startPos);
+                
             }
             _startBlock = nullptr;
             _dragDirection = DRAG_NONE;
