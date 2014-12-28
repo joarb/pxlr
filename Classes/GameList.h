@@ -9,6 +9,21 @@
 #ifndef __PXLR__GameList__
 #define __PXLR__GameList__
 
-#include <stdio.h>
+#include "cocos2d.h"
+
+class GameList : public cocos2d::Layer
+{
+    
+public:
+    
+    GameList();
+    ~GameList();
+    
+    static cocos2d::Scene* createScene();
+    
+    virtual bool init();
+
+    CREATE_FUNC(GameList);
+};
 
 #endif /* defined(__PXLR__GameList__) */
