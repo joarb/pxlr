@@ -101,7 +101,7 @@ bool PxlrBlock::init()
 
 bool PxlrBlock::containsTouchLocation(cocos2d::Touch* touch)
 {
-    cocos2d::Vec2 touchPos = convertTouchToNodeSpace(touch);
+    //cocos2d::Vec2 touchPos = convertTouchToNodeSpace(touch);
     
     //cocos2d::log("size: %4.2f, %4.2f", getContentSize().width, getContentSize().height);
     //cocos2d::log("pos:  %4.2f, %4.2f", touch->getLocation().x, touch->getLocation().y);
@@ -173,4 +173,23 @@ void PxlrBlock::initBlockState()
 {
     _pxlStates.reserve(_blockSize);
     std::generate_n(std::back_inserter(_pxlStates), _blockSize, gen_rand_bool());
+}
+
+void PxlrBlock::setBlockColor(const cocos2d::Color3B &color)
+{
+    this->getChildren().begin();
+    for (auto it = getChildren().begin(); it != getChildren().end(); ++it) {
+        //cocos2d::Sprite* sprt = dynamic_cast<cocos2d::Sprite*>(*it);
+        //if (sprt != nullptr) {
+            //sprt->setColor(cocos2d::Color3B(1.0f, 0.0f, 0.0f));
+        //}
+        if ((*it)->getTag() == PXL_TAG) {
+            ((cocos2d::Sprite*)(*it))->setColor(color);
+        }
+    }
+}
+
+void PxlrBlock::setNoBlockColor()
+{
+    setBlockColor(cocos2d::Color3B::WHITE);
 }

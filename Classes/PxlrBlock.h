@@ -34,6 +34,9 @@ public:
     static float getXSpacing();
     static float getYSpacing();
     
+    void setBlockColor(const cocos2d::Color3B &color);
+    void setNoBlockColor();
+    
     virtual bool init();
     CREATE_FUNC(PxlrBlock);
 };
