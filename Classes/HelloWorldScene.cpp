@@ -10,6 +10,8 @@ USING_NS_CC;
 
 #define SNAP_DIRECTION	20
 
+cocos2d::Color3B HelloWorld::ACTIVE_BLOCK = cocos2d::Color3B(0, 0, 255);
+
 HelloWorld::HelloWorld() :
 	_maxDisplacementX(0.0f),
 	_maxDisplacementY(0.0f),
@@ -20,6 +22,7 @@ HelloWorld::HelloWorld() :
 	_startPos(cocos2d::Vec2(0.0f, 0.0f)),
 	_startDiff(cocos2d::Vec2(0.0f, 0.0f)),
 	_startBlock(nullptr),
+	_hoverBlock(nullptr),
 	_numBlocks(0)
 {
     _xOffset = 30.0f;
@@ -77,57 +80,12 @@ bool HelloWorld::init()
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 1);
     
-    _numBlocks = 9;
+    _numBlocks = 16;
 
     initBlocks();
     
     setMaxDisplacmenet(_minDisplacementX, _maxDisplacementX, _minDisplacementY, _maxDisplacementY);
     
-    
-    /*
-    cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("SpriteSheet.plist", "SpriteSheet.png");
-    
-    cocos2d::SpriteFrame* outerFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName("pxlr_outer.png");
-    cocos2d::SpriteFrame* innerFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName("pxlr_inner.png");
-
-    cocos2d::Vec2 pos = cocos2d::Vec2(100.0f, 100.0f);
-    cocos2d::Vec2 anchor = cocos2d::Vec2(0.5f, 0.5f);
-    
-    cocos2d::Sprite* sprt = cocos2d::Sprite::createWithSpriteFrame(outerFrame);
-    
-    sprt->setAnchorPoint(anchor);
-    sprt->setPosition(pos);
-    this->addChild(sprt);
-    
-    cocos2d::Sprite* sprtInner = cocos2d::Sprite::createWithSpriteFrame(innerFrame);
-        
-    sprtInner->setAnchorPoint(anchor);
-    sprtInner->setPosition(pos);
-    this->addChild(sprtInner);
-     */
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
-    //auto label = LabelTTF::create("Hello World", "Arial", 24);
-    
-    // position the label on the center of the screen
-    //label->setPosition(Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height - label->getContentSize().height));
-
-    // add the label as a child to this layer
-    //this->addChild(label, 1);
-
-    // add "HelloWorld" splash screen"
-    //auto sprite = Sprite::create("HelloWorld.png");
-
-    // position the sprite on the center of the screen
-    //sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    // add the sprite as a child to this layer
-    //this->addChild(sprite, 0);
     
     return true;
 }
@@ -174,7 +132,7 @@ cocos2d::Vec2 HelloWorld::getBlockPosition(int col, int row)
     return cocos2d::Vec2(col * xShift + _xOffset, row * yShift + _yOffset);
 }
 
-void HelloWorld::getBlockIndices(cocos2d::Vec2 pos, int& col, int& row)
+void HelloWorld::getBlockIndices(const cocos2d::Vec2& pos, int& col, int& row)
 {
     float xShift = getXShift();
     float yShift = getYShift();
@@ -243,19 +201,21 @@ void HelloWorld::getBlockPosition(PxlrBlock* block, int& column, int& row)
     getBlockIndices(pos, column, row);
 }
 
-bool HelloWorld::areBlocksAdjacent(PxlrBlock* block1, PxlrBlock* block2)
+bool HelloWorld::areBlocksAdjacent(const cocos2d::Vec2& pos1, const cocos2d::Vec2& pos2)
 {
     int b1Col;
     int b1Row;
     int b2Col;
     int b2Row;
-    getBlockPosition(block1, b1Col, b1Row);
-    getBlockPosition(block2, b2Col, b2Row);
+    getBlockIndices(pos1, b1Col, b1Row);
+    getBlockIndices(pos2, b2Col, b2Row);
     
     if ((((b1Col == b2Col + 1) or (b1Col == b2Col - 1)) and (b1Row == b2Row))
-        or (((b1Row == b2Row + 1) or (b1Row = b2Row - 1)) and (b1Col == b2Col))) {
+        or (((b1Row == b2Row + 1) or (b1Row == b2Row - 1)) and (b1Col == b2Col))) {
+        //cocos2d::log("Adjacent: (%d, %d), (%d, %d)", b1Col, b1Row, b2Col, b2Row);
         return true;
     } else {
+        //cocos2d::log("Not adjacent: (%d, %d), (%d, %d)", b1Col, b1Row, b2Col, b2Row);
         return false;
     }
 }
@@ -292,14 +252,17 @@ cocos2d::Vector<PxlrBlock*> HelloWorld::getAdjacentBlocks(PxlrBlock* originalBlo
     return adjacentBlocks;
 }
 
-PxlrBlock* HelloWorld::getTocuhingBlock(Touch* touch)
+PxlrBlock* HelloWorld::getTocuhingBlock(Touch* touch, PxlrBlock* exclude)
 {
     auto children = getChildren();
     for (auto it = children.begin(); it != children.end(); ++it) {
         if ((*it)->getTag() == BLOCK_TAG) {
             PxlrBlock* block = (PxlrBlock*)(*it);
-            if (block->containsTouchLocation(touch)) {
-                return block;
+            if (block != exclude)
+            {
+                if (block->containsTouchLocation(touch)) {
+                	return block;
+            	}
             }
         }
     }
@@ -320,6 +283,8 @@ bool HelloWorld::onTouchBegan(Touch* touch, Event* event)
     _startBlock = getTocuhingBlock(touch);
     if (_startBlock)
     {
+        _startBlock->setZOrder(1);
+        _startBlock->setBlockColor(cocos2d::Color3B::RED);
     	_startPos = _startBlock->getPosition();
         _startDiff = _startPos - touch->getLocation();
         //log("StartPos:  %4.2f, %4.2f", _startPos.x, _startPos.y);
@@ -378,24 +343,19 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
      */
     if (_startBlock)
     {
-        auto touchPoint = touch->getLocation();
         
-        auto diff = _startTouchPos - touchPoint;
-        auto distance = touchPoint.getDistance(_startTouchPos);
-        //if (distance < SNAP_DIRECTION)
-        //{
-            if (pow(diff.x, 2) > pow(diff.y, 2))
-            {
-                _dragDirection = DRAG_HORIZ;
-            } else {
-                _dragDirection = DRAG_VERT;
-            }
-        //}
+        cocos2d::Vec2 displacement = _startPos;
 
-        //log("%4.2f, %4.2f", touchPoint.x + _startDiff.x, _maxDisplacementX);
-        //log("%4.2f, %4.2f", touchPoint.y + _startDiff.y, _maxDisplacementY);
+        auto touchPoint = touch->getLocation();
+        auto diff = _startTouchPos - touchPoint;
         
-        cocos2d::Vec2 displacement;
+        if (pow(diff.x, 2) > pow(diff.y, 2))
+        {
+            _dragDirection = DRAG_HORIZ;
+        } else {
+            _dragDirection = DRAG_VERT;
+        }
+        
         if ((touchPoint.x + _startDiff.x) > (_startPos.x + _maxDisplacementX))
         {
             displacement.x = _startPos.x + _maxDisplacementX;
@@ -416,36 +376,85 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
             displacement.y = touchPoint.y + _startDiff.y;
         }
         
+        PxlrBlock* hoverBlock = getTocuhingBlock(touch, _startBlock);
+        if (hoverBlock)
+        {
+            
+            if (areBlocksAdjacent(_startPos, hoverBlock->getPosition()))
+            {
+                if (_hoverBlock && (_hoverBlock != hoverBlock))
+                {
+                    _hoverBlock->setNoBlockColor();
+                }
+                _hoverBlock = hoverBlock;
+                _hoverBlock->setBlockColor(cocos2d::Color3B::BLUE);
+                
+                // Set drag direction
+                int hoverCol;
+                int hoverRow;
+                int startCol;
+                int startRow;
+                
+                getBlockPosition(_hoverBlock, hoverCol, hoverRow);
+                getBlockIndices(_startPos, startCol, startRow);
+                
+                cocos2d::log("(%d, %d), (%d, %d)", startCol, startRow, hoverCol, hoverRow);
+                if (hoverCol == startCol)
+                {
+                    _dragDirection = DRAG_VERT;
+                    //cocos2d::log("_dragDir: VERT, (%d, %d), (%d, %d)", startCol, startRow, hoverCol, hoverRow);
+                }
+                if (hoverRow == startRow)
+                {
+                    _dragDirection = DRAG_HORIZ;
+                    //cocos2d::log("_dragDir: HORIZ, (%d, %d), (%d, %d)", startCol, startRow, hoverCol, hoverRow);
+                }
+                
+            }
+            
+        } else {
+
+            if (_hoverBlock)
+            {
+                _hoverBlock->setNoBlockColor();
+            }
+            
+        }
+        
         if (_dragDirection == DRAG_HORIZ)
         {
             _startBlock->setPosition( Vec2(displacement.x, _startPos.y) );
         } else {
             _startBlock->setPosition( Vec2(_startPos.x, displacement.y) );
         }
+        
     }
 }
 
 void HelloWorld::onTouchEnded(Touch* touch, Event* event)
 {
-    /*
-    CCASSERT(_state == kPaddleStateGrabbed, "Paddle - Unexpected state!");
-    
-    _state = kPaddleStateUngrabbed;
-     */
-    
-    if (_startBlock) {
+	if (_startBlock) {
         _startBlock->setPosition(_startPos);
-        PxlrBlock* endBlock = getTocuhingBlock(touch);
+        PxlrBlock* endBlock = getTocuhingBlock(touch, _startBlock);
         if (endBlock)
         {
-            if (areBlocksAdjacent(_startBlock, endBlock)) {
-                // TODO: Swap!
+            if (areBlocksAdjacent(_startPos, endBlock->getPosition())) {
+                
+                // TODO: Animate swap
+                
                 _startBlock->setPosition(endBlock->getPosition());
                 endBlock->setPosition(_startPos);
                 
             }
-            _startBlock = nullptr;
-            _dragDirection = DRAG_NONE;
+        }
+        _startBlock->setNoBlockColor();
+        _startBlock->setZOrder(0);
+        _startBlock = nullptr;
+        _dragDirection = DRAG_NONE;
+        if (_hoverBlock)
+        {
+            _hoverBlock->setNoBlockColor();
+            _hoverBlock = nullptr;
         }
     }
 }

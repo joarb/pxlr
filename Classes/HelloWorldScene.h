@@ -21,19 +21,20 @@ private:
     cocos2d::Vec2 _startPos;
     cocos2d::Vec2 _startDiff;
     PxlrBlock* _startBlock;
+    PxlrBlock* _hoverBlock;
     
     int _numBlocks;
     
     int getNumBlocks();
     float getSpacingCoeff();
     cocos2d::Vec2 getBlockPosition(int col, int row);
-    void getBlockIndices(cocos2d::Vec2 pos, int& col, int& row);
+    void getBlockIndices(const cocos2d::Vec2& pos, int& col, int& row);
     float getXShift();
     float getYShift();
     
-    PxlrBlock* getTocuhingBlock(cocos2d::Touch* touch);
+    PxlrBlock* getTocuhingBlock(cocos2d::Touch* touch, PxlrBlock* exclude = nullptr);
     
-    bool areBlocksAdjacent(PxlrBlock* block1, PxlrBlock* block2);
+    bool areBlocksAdjacent(const cocos2d::Vec2& pos1, const cocos2d::Vec2& pos2);
     PxlrBlock* getBlock(int column, int row);
     cocos2d::Vector<PxlrBlock*> getAdjacentBlocks(PxlrBlock* originalBlock);
     void getBlockPosition(PxlrBlock* block, int& column, int& row);
@@ -46,6 +47,9 @@ private:
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 
     void setMaxDisplacmenet(float& minDisplacementX, float& maxDisplacementX, float& minDisplacementY, float& maxDisplacementY);
+    
+    static cocos2d::Color3B ACTIVE_BLOCK;
+    //static cocos2d::Color3B NORMAL_BLOCK;
     
 public:
     
