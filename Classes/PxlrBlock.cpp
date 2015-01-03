@@ -193,3 +193,17 @@ void PxlrBlock::setNoBlockColor()
 {
     setBlockColor(cocos2d::Color3B::WHITE);
 }
+
+int PxlrBlock::overlap(const PxlrBlock* otherBlock)
+{
+    int overlappingPxls = 0;
+    for (auto it = otherBlock->_pxlStates.begin(); it != otherBlock->_pxlStates.end(); ++it)
+    {
+        long index = it - otherBlock->_pxlStates.begin();
+        if ((*it) && (_pxlStates.at(index)))
+        {
+            overlappingPxls++;
+        }
+    }
+    return overlappingPxls;
+}

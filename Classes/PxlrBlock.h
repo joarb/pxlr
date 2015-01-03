@@ -34,6 +34,8 @@ public:
     static float getXSpacing();
     static float getYSpacing();
     
+    int overlap(const PxlrBlock* block);
+    
     void setBlockColor(const cocos2d::Color3B &color);
     void setNoBlockColor();
     
