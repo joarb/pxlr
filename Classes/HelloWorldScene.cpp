@@ -2,7 +2,7 @@
 
 USING_NS_CC;
 
-#define BLOCK_TAG	1
+#define BLOCK_TAG	    1
 
 #define DRAG_NONE	0
 #define DRAG_HORIZ	1
@@ -58,6 +58,9 @@ bool HelloWorld::init()
     {
         return false;
     }
+    
+    _hudIndicator = HUDIndicator::create();
+    addChild(_hudIndicator);
     
     Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -398,7 +401,7 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
                 getBlockPosition(_hoverBlock, hoverCol, hoverRow);
                 getBlockIndices(_startPos, startCol, startRow);
                 
-                cocos2d::log("(%d, %d), (%d, %d)", startCol, startRow, hoverCol, hoverRow);
+                //cocos2d::log("(%d, %d), (%d, %d)", startCol, startRow, hoverCol, hoverRow);
                 if (hoverCol == startCol)
                 {
                     _dragDirection = DRAG_VERT;
@@ -445,6 +448,8 @@ void HelloWorld::onTouchEnded(Touch* touch, Event* event)
                 _startBlock->setPosition(endBlock->getPosition());
                 endBlock->setPosition(_startPos);
                 
+                updateScore(_startBlock, endBlock);
+                
             }
         }
         _startBlock->setNoBlockColor();
@@ -457,4 +462,23 @@ void HelloWorld::onTouchEnded(Touch* touch, Event* event)
             _hoverBlock = nullptr;
         }
     }
+}
+
+int HelloWorld::calculateScore(PxlrBlock* startBlock, PxlrBlock* endBlock)
+{
+    return 0;
+}
+
+int HelloWorld::calculateOverlappingDots(PxlrBlock* startBlock, PxlrBlock* endBlock)
+{
+    return startBlock->overlap(endBlock);
+}
+
+void HelloWorld::updateScore(PxlrBlock* startBlock, PxlrBlock* endBlock)
+{
+    int newRemainingDots = _hudIndicator->getRemainingDots() - calculateOverlappingDots(startBlock, endBlock);
+        
+    // TODO: Calculate new score
+    
+    _hudIndicator->setRemainingDots(newRemainingDots);
 }

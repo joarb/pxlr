@@ -3,6 +3,7 @@
 
 #include "cocos2d.h"
 #include "PxlrBlock.h"
+#include "HUDIndicator.h"
 
 class HelloWorld : public cocos2d::Layer
 {
@@ -22,6 +23,8 @@ private:
     cocos2d::Vec2 _startDiff;
     PxlrBlock* _startBlock;
     PxlrBlock* _hoverBlock;
+    
+    HUDIndicator* _hudIndicator;
     
     int _numBlocks;
     
@@ -47,6 +50,11 @@ private:
     void onTouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 
     void setMaxDisplacmenet(float& minDisplacementX, float& maxDisplacementX, float& minDisplacementY, float& maxDisplacementY);
+    
+    int calculateScore(PxlrBlock* startBlock, PxlrBlock* endBlock);
+    int calculateOverlappingDots(PxlrBlock* startBlock, PxlrBlock* endBlock);
+
+    void updateScore(PxlrBlock* startBlock, PxlrBlock* endBlock);
     
     static cocos2d::Color3B ACTIVE_BLOCK;
     //static cocos2d::Color3B NORMAL_BLOCK;
