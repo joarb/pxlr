@@ -38,6 +38,8 @@
 		505D179E19FBA4250011D631 /* SpriteSheet.plist in Resources */ = {isa = PBXBuildFile; fileRef = 505D179B19FBA4250011D631 /* SpriteSheet.plist */; };
 		505D179F19FBA4250011D631 /* SpriteSheet.png in Resources */ = {isa = PBXBuildFile; fileRef = 505D179C19FBA4250011D631 /* SpriteSheet.png */; };
 		505D17A019FBA4250011D631 /* SpriteSheet.png in Resources */ = {isa = PBXBuildFile; fileRef = 505D179C19FBA4250011D631 /* SpriteSheet.png */; };
+		50862F131A56860E00024DB3 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50862F111A56860D00024DB3 /* Utils.cpp */; };
+		50862F141A56860E00024DB3 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50862F111A56860D00024DB3 /* Utils.cpp */; };
 		5087E75317EB910900C73F5D /* CloseNormal.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AFAF8B916D35E4900DB1158 /* CloseNormal.png */; };
 		5087E75417EB910900C73F5D /* CloseSelected.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AFAF8BA16D35E4900DB1158 /* CloseSelected.png */; };
 		5087E75517EB910900C73F5D /* HelloWorld.png in Resources */ = {isa = PBXBuildFile; fileRef = 1AFAF8BB16D35E4900DB1158 /* HelloWorld.png */; };
@@ -69,6 +71,7 @@
 		50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */ = {isa = PBXBuildFile; fileRef = 50EF629517ECD46A001EB2F8 /* Icon-100.png */; };
 		50EF62A217ECD613001EB2F8 /* Icon-29.png in Resources */ = {isa = PBXBuildFile; fileRef = 50EF62A017ECD613001EB2F8 /* Icon-29.png */; };
 		50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */ = {isa = PBXBuildFile; fileRef = 50EF62A117ECD613001EB2F8 /* Icon-50.png */; };
+		50FAAB621A514EC700630D38 /* HUDIndicator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50FAAB601A514EC700630D38 /* HUDIndicator.cpp */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -251,6 +254,8 @@
 		505D179619FBA4140011D631 /* PxlrBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PxlrBlock.h; path = ../Classes/PxlrBlock.h; sourceTree = "<group>"; };
 		505D179B19FBA4250011D631 /* SpriteSheet.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = SpriteSheet.plist; sourceTree = "<group>"; };
 		505D179C19FBA4250011D631 /* SpriteSheet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SpriteSheet.png; sourceTree = "<group>"; };
+		50862F111A56860D00024DB3 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../Classes/Utils.cpp; sourceTree = "<group>"; };
+		50862F121A56860D00024DB3 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../Classes/Utils.h; sourceTree = "<group>"; };
 		5087E76F17EB910900C73F5D /* PXLR Mac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PXLR Mac.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5087E77217EB970100C73F5D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		5087E77317EB970100C73F5D /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
@@ -273,6 +278,8 @@
 		50EF629517ECD46A001EB2F8 /* Icon-100.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-100.png"; sourceTree = "<group>"; };
 		50EF62A017ECD613001EB2F8 /* Icon-29.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-29.png"; sourceTree = "<group>"; };
 		50EF62A117ECD613001EB2F8 /* Icon-50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-50.png"; sourceTree = "<group>"; };
+		50FAAB601A514EC700630D38 /* HUDIndicator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = HUDIndicator.cpp; path = ../Classes/HUDIndicator.cpp; sourceTree = "<group>"; };
+		50FAAB611A514EC700630D38 /* HUDIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HUDIndicator.h; path = ../Classes/HUDIndicator.h; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -349,6 +356,8 @@
 		15AA9C4015B7EC450033D6C2 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				50862F111A56860D00024DB3 /* Utils.cpp */,
+				50862F121A56860D00024DB3 /* Utils.h */,
 				505D179519FBA4140011D631 /* PxlrBlock.cpp */,
 				505D179619FBA4140011D631 /* PxlrBlock.h */,
 				1AFAF8B316D35DE700DB1158 /* AppDelegate.cpp */,
@@ -357,6 +366,8 @@
 				1AFAF8B616D35DE700DB1158 /* HelloWorldScene.h */,
 				50B079051A31C28F0058F14B /* GameList.cpp */,
 				50B079061A31C28F0058F14B /* GameList.h */,
+				50FAAB601A514EC700630D38 /* HUDIndicator.cpp */,
+				50FAAB611A514EC700630D38 /* HUDIndicator.h */,
 			);
 			name = Classes;
 			path = ../classes;
@@ -694,6 +705,8 @@
 				503AE10217EB989F00D1A890 /* RootViewController.mm in Sources */,
 				50B079071A31C28F0058F14B /* GameList.cpp in Sources */,
 				1AFAF8B716D35DE700DB1158 /* AppDelegate.cpp in Sources */,
+				50862F131A56860E00024DB3 /* Utils.cpp in Sources */,
+				50FAAB621A514EC700630D38 /* HUDIndicator.cpp in Sources */,
 				505D179719FBA4140011D631 /* PxlrBlock.cpp in Sources */,
 				503AE10117EB989F00D1A890 /* main.m in Sources */,
 				1AFAF8B816D35DE700DB1158 /* HelloWorldScene.cpp in Sources */,
@@ -707,6 +720,7 @@
 				5087E75717EB910900C73F5D /* AppDelegate.cpp in Sources */,
 				505D179819FBA4140011D631 /* PxlrBlock.cpp in Sources */,
 				5087E75817EB910900C73F5D /* HelloWorldScene.cpp in Sources */,
+				50862F141A56860E00024DB3 /* Utils.cpp in Sources */,
 				503AE10517EB98FF00D1A890 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
