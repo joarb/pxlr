@@ -2,7 +2,7 @@
 
 USING_NS_CC;
 
-#define BLOCK_TAG	    1
+#define BLOCK_TAG	1
 
 #define DRAG_NONE	0
 #define DRAG_HORIZ	1
@@ -18,11 +18,14 @@ HelloWorld::HelloWorld() :
 	_xOffset(0.0f),
 	_yOffset(0.0f),
 	_dragDirection(DRAG_NONE),
+	_prevDragDirection(DRAG_NONE),
 	_startTouchPos(cocos2d::Vec2(0.0f, 0.0f)),
 	_startPos(cocos2d::Vec2(0.0f, 0.0f)),
 	_startDiff(cocos2d::Vec2(0.0f, 0.0f)),
 	_startBlock(nullptr),
 	_hoverBlock(nullptr),
+	_nextPxlBlock(nullptr),
+	_startPositions(),
 	_numBlocks(0)
 {
     _xOffset = 30.0f;
@@ -255,6 +258,67 @@ cocos2d::Vector<PxlrBlock*> HelloWorld::getAdjacentBlocks(PxlrBlock* originalBlo
     return adjacentBlocks;
 }
 
+void HelloWorld::fillRemainingCol(int indexRowStart, int indexRowEnd, int indexCol)
+{
+    for(int i = indexRowStart; i <= indexRowEnd; ++i)
+    {
+        PxlrBlock* pxlrBlock = getBlock(indexCol, i);
+        if (pxlrBlock)
+        {
+            _startPositions.insert(std::pair<PxlrBlock*, cocos2d::Vec2>(pxlrBlock, pxlrBlock->getPosition()));
+        }
+    }
+}
+
+void HelloWorld::fillRemainingRow(int indexColStart, int indexColEnd, int indexRow)
+{
+    for(int i = indexColStart; i <= indexColEnd; ++i)
+    {
+        PxlrBlock* pxlrBlock = getBlock(i, indexRow);
+        if (pxlrBlock)
+        {
+	        _startPositions.insert(std::pair<PxlrBlock*, cocos2d::Vec2>(pxlrBlock, pxlrBlock->getPosition()));
+        }
+    }
+}
+
+void HelloWorld::fillRemainingColRowPositions(PxlrBlock* draggedElement, int dragDirection)
+{
+    _startPositions.clear();
+    int draggedCol = -1;
+    int draggedRow = -1;
+    getBlockIndices(draggedElement->getPosition(), draggedCol, draggedRow);
+    if (dragDirection < 0)
+    {
+        if (dragDirection == -DRAG_HORIZ)
+        {
+            fillRemainingRow(0, draggedCol - 1, draggedRow);
+        }
+        else if (dragDirection == -DRAG_VERT)
+        {
+            fillRemainingCol(0, draggedRow - 1, draggedCol);
+        }
+    }
+    else if (dragDirection > 0)
+    {
+        if (dragDirection == DRAG_HORIZ)
+        {
+            fillRemainingRow(draggedCol + 1, round(sqrt(_numBlocks)) - 1, draggedRow);
+        }
+        else if (dragDirection == DRAG_VERT)
+        {
+            fillRemainingCol(draggedRow + 1, round(sqrt(_numBlocks)) - 1, draggedCol);
+        }
+    }
+}
+
+void HelloWorld::moveRemaining(const cocos2d::Vec2 shift)
+{
+    for (auto it = _startPositions.begin(); it != _startPositions.end(); ++it) {
+        it->first->setPosition(it->second + shift);
+    }
+}
+
 PxlrBlock* HelloWorld::getTocuhingBlock(Touch* touch, PxlrBlock* exclude)
 {
     auto children = getChildren();
@@ -319,6 +383,7 @@ bool HelloWorld::onTouchBegan(Touch* touch, Event* event)
         }
         
         _startTouchPos = touch->getLocation();
+        _dragDirection = DRAG_NONE;
     }
     return true;
 }
@@ -349,6 +414,8 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
         
         cocos2d::Vec2 displacement = _startPos;
 
+        _prevDragDirection = _dragDirection;
+        
         auto touchPoint = touch->getLocation();
         auto diff = _startTouchPos - touchPoint;
         
@@ -357,6 +424,17 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
             _dragDirection = DRAG_HORIZ;
         } else {
             _dragDirection = DRAG_VERT;
+        }
+        
+        if (_dragDirection != _prevDragDirection)
+        {
+            int sign = 1;
+            if (((diff.x < 0) && (_dragDirection == DRAG_HORIZ)) || ((diff.y < 0) && (_dragDirection == DRAG_VERT)))
+            {
+                sign = -1;
+            }
+            moveRemaining(cocos2d::Vec2(0.0f, 0.0f));
+            fillRemainingColRowPositions(_startBlock, sign * _dragDirection);
         }
         
         if ((touchPoint.x + _startDiff.x) > (_startPos.x + _maxDisplacementX))
@@ -427,8 +505,10 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
         if (_dragDirection == DRAG_HORIZ)
         {
             _startBlock->setPosition( Vec2(displacement.x, _startPos.y) );
+            moveRemaining(Vec2(touchPoint.x + _startDiff.x - _startPos.x, 0.0f));
         } else {
             _startBlock->setPosition( Vec2(_startPos.x, displacement.y) );
+            moveRemaining(Vec2(0.0f, touchPoint.y + _startDiff.y - _startPos.y));
         }
         
     }
@@ -445,17 +525,29 @@ void HelloWorld::onTouchEnded(Touch* touch, Event* event)
                 
                 // TODO: Animate swap
                 
-                _startBlock->setPosition(endBlock->getPosition());
-                endBlock->setPosition(_startPos);
-                
+                //_startBlock->setPosition(endBlock->getPosition());
+                //endBlock->setPosition(_startPos);
+                //removeChild(endBlock);
                 updateScore(_startBlock, endBlock);
+
+                endBlock->mergeIn(_startBlock);
+                removeChild(_startBlock);
+                _startBlock = nullptr;
+                
+                pullGap();
+                
+                // TODO: Release the remaining blocks at the new position
                 
             }
         }
-        _startBlock->setNoBlockColor();
-        _startBlock->setZOrder(0);
-        _startBlock = nullptr;
+        //_startBlock->setNoBlockColor();
+        //_startBlock->setZOrder(0);
         _dragDirection = DRAG_NONE;
+        _prevDragDirection = DRAG_NONE;
+        
+        moveRemaining(Vec2(0.0f, 0.0f));
+        _startPositions.clear();
+
         if (_hoverBlock)
         {
             _hoverBlock->setNoBlockColor();
@@ -472,6 +564,30 @@ int HelloWorld::calculateScore(PxlrBlock* startBlock, PxlrBlock* endBlock)
 int HelloWorld::calculateOverlappingDots(PxlrBlock* startBlock, PxlrBlock* endBlock)
 {
     return startBlock->overlap(endBlock);
+}
+
+// TODO: Implement next PxlBlock ready to be pulled in.
+
+// TODO: Have all PxlBlocks in same col/row follow in to fill gap
+
+// TODO: Finish pullGap.
+void HelloWorld::pullGap()
+{
+    // TODO: Pull col or row into open spot, fill with new PxlBlock in vacant space
+    
+    int col;
+    int row;
+    std::vector<int> gaps;
+    
+    cocos2d::Node* pxlBlock = getChildByTag(BLOCK_TAG);
+    while (pxlBlock) {
+        if (pxlBlock)
+        {
+            getBlockIndices(pxlBlock->getPosition(), col, row);
+            
+        }
+    }
+    
 }
 
 void HelloWorld::updateScore(PxlrBlock* startBlock, PxlrBlock* endBlock)

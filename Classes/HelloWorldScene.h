@@ -18,12 +18,16 @@ private:
     float _yOffset;
     
     int _dragDirection;
+    int _prevDragDirection;
     cocos2d::Vec2 _startTouchPos;
     cocos2d::Vec2 _startPos;
     cocos2d::Vec2 _startDiff;
     PxlrBlock* _startBlock;
     PxlrBlock* _hoverBlock;
-    
+    PxlrBlock* _nextPxlBlock;
+
+    std::map<PxlrBlock*, cocos2d::Vec2> _startPositions;
+
     HUDIndicator* _hudIndicator;
     
     int _numBlocks;
@@ -35,6 +39,10 @@ private:
     float getXShift();
     float getYShift();
     
+    void fillRemainingCol(int indexRowStart, int indexRowEnd, int indexCol);
+    void fillRemainingRow(int indexColStart, int indexColEnd, int indexRow);
+    void fillRemainingColRowPositions(PxlrBlock* draggedElement, int dragDirection);
+    
     PxlrBlock* getTocuhingBlock(cocos2d::Touch* touch, PxlrBlock* exclude = nullptr);
     
     bool areBlocksAdjacent(const cocos2d::Vec2& pos1, const cocos2d::Vec2& pos2);
@@ -43,6 +51,8 @@ private:
     void getBlockPosition(PxlrBlock* block, int& column, int& row);
     
     void initBlocks();
+    
+    void moveRemaining(const cocos2d::Vec2 shift);
     
     bool containsTouchLocation(cocos2d::Touch* touch);
     bool onTouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -54,6 +64,8 @@ private:
     int calculateScore(PxlrBlock* startBlock, PxlrBlock* endBlock);
     int calculateOverlappingDots(PxlrBlock* startBlock, PxlrBlock* endBlock);
 
+    void pullGap();
+    
     void updateScore(PxlrBlock* startBlock, PxlrBlock* endBlock);
     
     static cocos2d::Color3B ACTIVE_BLOCK;
