@@ -44,56 +44,17 @@ bool PxlrBlock::init()
     
     initBlockState();
     
-    cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("SpriteSheet.plist", "SpriteSheet.png");
-    
-    cocos2d::SpriteFrame* outerFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName("pxlr_outer_small.png");
-    cocos2d::SpriteFrame* innerFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName("pxlr_inner_small.png");
-    
-    int counter = 0;
+    float xSize = 0.0f;
+    float ySize = 0.0f;
     
     float xShift = PxlrBlock::getXShift();
     float yShift = PxlrBlock::getYShift();
     
-    float xSize = 0.0f;
-    float ySize = 0.0f;
-    
-    //float xOffset = outerFrame->getTexture()->getContentSize().width / 2.0;
-    ///float yOffset = outerFrame->getTexture()->getContentSize().height / 2.0;
-    
-    for (auto it = _pxlStates.begin(); it != _pxlStates.end(); ++it)
-    {
-        int x = counter % int ( sqrt(_blockSize) );
-        int y = floor ( counter / sqrt(_blockSize) ) ;
-
-        cocos2d::Sprite* sprt = cocos2d::Sprite::createWithSpriteFrame(outerFrame);
-        
-        float xOffset = sprt->getContentSize().width / 2.0;
-        float yOffset = sprt->getContentSize().height / 2.0;
-        
-        xSize = sprt->getContentSize().width;
-        ySize = sprt->getContentSize().height;
-        
-        cocos2d::Vec2 pos = cocos2d::Vec2(xOffset + xShift * x, yOffset + yShift * y);
-        
-        sprt->setPosition(pos);
-        sprt->setTag(PXL_TAG);
-        this->addChild(sprt);
-
-        if (*it)
-        {
-            cocos2d::Sprite* sprtInner = cocos2d::Sprite::createWithSpriteFrame(innerFrame);
-
-            sprtInner->setPosition(pos);
-            sprtInner->setTag(PXL_TAG);
-            this->addChild(sprtInner);
-        }
-        
-        counter++;
-    }
+    setPxls(xSize, ySize);
     
     float maxX = (_blockSize - 1) % int ( sqrt(_blockSize) );
     float maxY = floor ( ( _blockSize - 1 ) / sqrt(_blockSize) );
-    
+
     setContentSize(cocos2d::Size(xSize + xShift * maxX, ySize + yShift * maxY));
 
     return true;
@@ -175,9 +136,107 @@ void PxlrBlock::initBlockState()
     std::generate_n(std::back_inserter(_pxlStates), _blockSize, gen_rand_bool());
 }
 
+void PxlrBlock::setPxls(float& xSize, float& ySize)
+{
+    
+    cocos2d::SpriteFrameCache::getInstance()->addSpriteFramesWithFile("SpriteSheet.plist", "SpriteSheet.png");
+    
+    cocos2d::SpriteFrame* outerFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName("pxlr_outer_small.png");
+    cocos2d::SpriteFrame* innerFrame = cocos2d::SpriteFrameCache::getInstance()->getSpriteFrameByName("pxlr_inner_small.png");
+    
+    int counter = 0;
+    
+    float xShift = PxlrBlock::getXShift();
+    float yShift = PxlrBlock::getYShift();
+    
+    //float xSize = 0.0f;
+    //float ySize = 0.0f;
+    
+    //float xOffset = outerFrame->getTexture()->getContentSize().width / 2.0;
+    ///float yOffset = outerFrame->getTexture()->getContentSize().height / 2.0;
+    
+    for (auto it = _pxlStates.begin(); it != _pxlStates.end(); ++it)
+    {
+        int x = counter % int ( sqrt(_blockSize) );
+        int y = floor ( counter / sqrt(_blockSize) ) ;
+        
+        cocos2d::Sprite* sprt = cocos2d::Sprite::createWithSpriteFrame(outerFrame);
+        
+        float xOffset = sprt->getContentSize().width / 2.0;
+        float yOffset = sprt->getContentSize().height / 2.0;
+        
+        xSize = sprt->getContentSize().width;
+        ySize = sprt->getContentSize().height;
+        
+        cocos2d::Vec2 pos = cocos2d::Vec2(xOffset + xShift * x, yOffset + yShift * y);
+        
+        sprt->setPosition(pos);
+        sprt->setTag(PXL_TAG);
+        this->addChild(sprt);
+        
+        if (*it)
+        {
+            cocos2d::Sprite* sprtInner = cocos2d::Sprite::createWithSpriteFrame(innerFrame);
+            
+            sprtInner->setPosition(pos);
+            sprtInner->setTag(PXL_TAG);
+            this->addChild(sprtInner);
+        }
+        
+        counter++;
+    }
+    
+}
+
+void PxlrBlock::mergeIn(const PxlrBlock* block)
+{
+    for (auto it = _pxlStates.begin(); it != _pxlStates.end(); ++it)
+    {
+        long index = it - _pxlStates.begin();
+        if (!(*it) && (block->_pxlStates.at(index)))
+        {
+            (*it) = true;
+        }
+    }
+
+    removePxls();
+    
+    float xSize = 0.0f;
+    float ySize = 0.0f;
+    
+    setPxls(xSize, ySize);
+}
+
+void PxlrBlock::removePxls()
+{
+    //std::for_each(getChildren().begin(), getChildren().end(), [this](cocos2d::Node* &node){ if (node->getTag() == PXL_TAG) removeChild(node); });
+//    for (auto it = getChildren().begin(); it != getChildren().end(); ++it) {
+//        if (*it != nullptr)
+//        {
+//            if ((*it)->getTag() == PXL_TAG)
+//            {
+//                removeChild(*it);
+//            }
+//        }
+//    }
+    
+//    for (auto& child : _children)
+//    {
+//        if(child && child->getTag() == PXL_TAG)
+//            this->removeChild(child);
+//    }
+
+    //removeChildByTag(PXL_TAG);
+    cocos2d::Node* child = getChildByTag(PXL_TAG);
+    while (child)
+    {
+        removeChild(child);
+        child = getChildByTag(PXL_TAG);
+    }
+}
+
 void PxlrBlock::setBlockColor(const cocos2d::Color3B &color)
 {
-    this->getChildren().begin();
     for (auto it = getChildren().begin(); it != getChildren().end(); ++it) {
         //cocos2d::Sprite* sprt = dynamic_cast<cocos2d::Sprite*>(*it);
         //if (sprt != nullptr) {
@@ -205,5 +264,6 @@ int PxlrBlock::overlap(const PxlrBlock* otherBlock)
             overlappingPxls++;
         }
     }
+    //cocos2d::log("Calculated overlap: %d", overlappingPxls);
     return overlappingPxls;
 }

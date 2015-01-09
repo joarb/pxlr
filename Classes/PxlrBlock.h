@@ -20,6 +20,9 @@ private:
     
     void initBlockState();
     
+    void removePxls();
+    void setPxls(float& xSize, float& ySize);
+    
 public:
     
     PxlrBlock();
@@ -33,6 +36,8 @@ public:
     static float getYShift();
     static float getXSpacing();
     static float getYSpacing();
+    
+    void mergeIn(const PxlrBlock* block);
     
     int overlap(const PxlrBlock* block);
     
