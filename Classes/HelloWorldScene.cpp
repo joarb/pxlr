@@ -17,6 +17,8 @@ HelloWorld::HelloWorld() :
 	_maxDisplacementY(0.0f),
 	_xOffset(0.0f),
 	_yOffset(0.0f),
+	_dragSign(1),
+	_prevDragSign(1),
 	_dragDirection(DRAG_NONE),
 	_prevDragDirection(DRAG_NONE),
 	_startTouchPos(cocos2d::Vec2(0.0f, 0.0f)),
@@ -415,6 +417,7 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
         cocos2d::Vec2 displacement = _startPos;
 
         _prevDragDirection = _dragDirection;
+        _prevDragSign = _dragSign;
         
         auto touchPoint = touch->getLocation();
         auto diff = _startTouchPos - touchPoint;
@@ -426,15 +429,18 @@ void HelloWorld::onTouchMoved(Touch* touch, Event* event)
             _dragDirection = DRAG_VERT;
         }
         
-        if (_dragDirection != _prevDragDirection)
+        //int sign = 1;
+        if (((diff.x < 0) && (_dragDirection == DRAG_HORIZ)) || ((diff.y < 0) && (_dragDirection == DRAG_VERT)))
         {
-            int sign = 1;
-            if (((diff.x < 0) && (_dragDirection == DRAG_HORIZ)) || ((diff.y < 0) && (_dragDirection == DRAG_VERT)))
-            {
-                sign = -1;
-            }
+            _dragSign = -1;
+        } else {
+            _dragSign = 1;
+        }
+        
+        if ((_dragDirection != _prevDragDirection) || ((_dragDirection == _prevDragDirection) && (_dragSign != _prevDragSign)))
+        {
             moveRemaining(cocos2d::Vec2(0.0f, 0.0f));
-            fillRemainingColRowPositions(_startBlock, sign * _dragDirection);
+            fillRemainingColRowPositions(_startBlock, _dragSign * _dragDirection);
         }
         
         if ((touchPoint.x + _startDiff.x) > (_startPos.x + _maxDisplacementX))

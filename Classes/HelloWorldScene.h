@@ -16,7 +16,9 @@ private:
     
     float _xOffset;
     float _yOffset;
-    
+
+    int _dragSign;
+    int _prevDragSign;
     int _dragDirection;
     int _prevDragDirection;
     cocos2d::Vec2 _startTouchPos;
